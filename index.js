@@ -1,27 +1,37 @@
-let express    = require('express');
-let bodyParser = require('body-parser');
-let path = require("path");
+const express = require("express");
+const expressHbs = require("express-handlebars");
+const hbs = require("hbs");
+const app = express();
+  
+const host = '127.0.0.1';
+const port = 3002;
 
-let app = express();
-app.use(express.static(path.join(__dirname, 'src')));
-
-let urlencodedParser = bodyParser.urlencoded({ extended: false });
-
-
-app.set('view engine', 'ejs');
-app.set('layout', 'views/layouts');
-app.use('/public',express.static('public'));
-
-
-
-//Главная страница >>>
-app.get('/index', function (req, res) {
-  res.render('index');
+// устанавливаем настройки для файлов layout
+app.engine("hbs", expressHbs(
+    {
+        layoutsDir: "views/layouts", 
+        defaultLayout: "main",
+        extname: "hbs"
+    }
+))
+app.set("view engine", "hbs");
+hbs.registerPartials(__dirname + "/views/partials");
+ 
+app.use("/contact", function(request, response){
+      
+    response.render("contact", {
+        title: "Мои контакты",
+        email: "gavgav@mycorp.com",
+        phone: "+1234567890"
+    });
+}); 
+ 
+app.use("/", function(request, response){
+    response.render("index.hbs", {
+        title: "Главная"
+    });
 });
-app.get('/', function (req, res) {
-  res.render('index');
-});
-//<<<
 
-app.listen(3002);
-console.log("Server Active ...");
+app.listen(port, host, function () {
+    console.log(`Server listens http://${host}:${port}`)
+})
