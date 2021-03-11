@@ -25,6 +25,28 @@ app.get("/", function(request, response){
         title: "Главная"
     });
 });
+//Страница Регистрации
+app.get("/about", function(request, response){
+    response.render("about.hbs", {
+        title: "О нас"
+    });
+});
+
+
+//Страница Аутентификации
+app.get("/signin", function(request, response){
+    response.render("signin.hbs", {
+        title: "Вход"
+    });
+});
+
+
+//Страница Регистрации
+app.get("/signup", function(request, response){
+    response.render("signup.hbs", {
+        title: "Регистрация"
+    });
+});
 
 // < - - - ROUTES - - - 
 
