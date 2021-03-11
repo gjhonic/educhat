@@ -10,28 +10,25 @@ const port = 3002;
 app.engine("hbs", expressHbs(
     {
         layoutsDir: "views/layouts", 
-        defaultLayout: "main",
+        defaultLayout: "default",
         extname: "hbs"
     }
 ))
 app.set("view engine", "hbs");
 hbs.registerPartials(__dirname + "/views/partials");
  
-app.use("/contact", function(request, response){
-      
-    response.render("contact", {
-        title: "Мои контакты",
-        email: "gavgav@mycorp.com",
-        phone: "+1234567890"
-    });
-}); 
- 
-app.use("/", function(request, response){
+// - - - ROUTES - - - >
+
+//Главная страница
+app.get("/", function(request, response){
     response.render("index.hbs", {
         title: "Главная"
     });
 });
 
+// < - - - ROUTES - - - 
+
+//Start Server
 app.listen(port, host, function () {
     console.log(`Server listens http://${host}:${port}`)
 })
