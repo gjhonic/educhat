@@ -2,6 +2,7 @@ const express = require("express");
 const expressHbs = require("express-handlebars");
 const hbs = require("hbs");
 const app = express();
+const session = require('express-session')
 
 //Routers
 //const userRouter = require("./routes/UserRouter.js");
@@ -22,6 +23,12 @@ app.engine("hbs", expressHbs(
 ))
 app.set("view engine", "hbs");
 hbs.registerPartials(__dirname + "/views/partials");
+app.use(
+    session({
+      secret: 'you secret key',
+      saveUninitialized: true,
+    })
+  )
 
 //Routes
 app.use("/", homeRouter);

@@ -1,13 +1,24 @@
 <h2>{{ title }}</h2>
 
-<form>
+{{#if flash}}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ flash.note}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+{{/if}}
+
+
+
+<form method="POST" action="#">
   <div class="form-group">
     <label for="exampleInputUsername">Username</label>
-    <input type="text" class="form-control" id="exampleInputUsername">
+    <input type="text" class="form-control" id="exampleInputUsername" name="username">
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
+    <input type="password" class="form-control" id="exampleInputPassword1" name="password">
   </div>
   <button type="submit" class="btn btn-primary">signin</button>
 </form>
