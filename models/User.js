@@ -1,6 +1,3 @@
-let db         = require('../my_modules/mydb');
-let MyLib      = require('../my_modules/mylib');
-
 class User {
   id       = '';
   name     = '';

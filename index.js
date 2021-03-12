@@ -23,14 +23,14 @@ app.engine("hbs", expressHbs(
 app.set("view engine", "hbs");
 hbs.registerPartials(__dirname + "/views/partials");
 
-
-//app.use("/users", userRouter);;
+//Routes
 app.use("/", homeRouter);
  
+
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")
 });
- 
+
 
 //Start Server
 app.listen(port, host, function () {
