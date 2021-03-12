@@ -2,7 +2,13 @@ const express = require("express");
 const expressHbs = require("express-handlebars");
 const hbs = require("hbs");
 const app = express();
-  
+
+//Routers
+//const userRouter = require("./routes/UserRouter.js");
+const homeRouter = require("./routes/HomeRouter.js");
+ 
+
+//CONFIG
 const host = '127.0.0.1';
 const port = 3002;
 
@@ -16,39 +22,15 @@ app.engine("hbs", expressHbs(
 ))
 app.set("view engine", "hbs");
 hbs.registerPartials(__dirname + "/views/partials");
+
+
+//app.use("/users", userRouter);;
+app.use("/", homeRouter);
  
-// - - - ROUTES - - - >
-
-//Главная страница
-app.get("/", function(request, response){
-    response.render("index.hbs", {
-        title: "Главная"
-    });
+app.use(function (req, res, next) {
+    res.status(404).send("Not Found")
 });
-//Страница Регистрации
-app.get("/about", function(request, response){
-    response.render("about.hbs", {
-        title: "О нас"
-    });
-});
-
-
-//Страница Аутентификации
-app.get("/signin", function(request, response){
-    response.render("signin.hbs", {
-        title: "Вход"
-    });
-});
-
-
-//Страница Регистрации
-app.get("/signup", function(request, response){
-    response.render("signup.hbs", {
-        title: "Регистрация"
-    });
-});
-
-// < - - - ROUTES - - - 
+ 
 
 //Start Server
 app.listen(port, host, function () {
