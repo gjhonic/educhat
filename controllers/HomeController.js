@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const MongoClient = require("mongodb").MongoClient;
-const dburl = "mongodb://localhost:27017/";
+const dburl = "mongodb://localhost:27017/educhat";
 const mongoClient = new MongoClient(dburl, { useUnifiedTopology: true });
 
-  
 //Actions
 
 //Main Pages
@@ -13,6 +12,7 @@ exports.index = function (request, response) {
         title: "Главная"
     });
 };
+
 //About Pages
 exports.about = function (request, response) {
     response.render("about.hbs", {
@@ -38,11 +38,21 @@ exports.signup = function (request, response) {
 //POST Process
 exports.signupProcess = function (request, response) {
     
+    //Проверка что поля не пустые
     if(!validate_isempty(request)){
         //request.session.flash = ["warning", "Заполните все поля!"];
         //request.session.flash_note = "Заполните все поля!";
-        response.redirect("signup");
+        //response.redirect("signup");
+        return response.send("Поля не заполнены!");
     }
+    
+    //Проверка на совпадение паролей
+    if(request.body.password != request.body.confirmpassword){
+        //response.redirect("signup");
+        return response.send("Пароли не совпадают");
+    }
+
+    mongoose.connect(dburl, { useUnifiedTopology: true, useNewUrlParser: true });
 
     //Модель пользователя
     const userScheme = new Schema({
@@ -75,18 +85,15 @@ exports.signupProcess = function (request, response) {
         },
     });
     
-    mongoClient.connect(function(err, client){
-          
-        const db = client.db("test");
-        const collection = db.collection("users");
-         
-        collection.insertOne(user, function(err, results){
-                  
-            console.log(results);
-            client.close();
-        });
+    const User = mongoose.model("user", userScheme);
+    User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: request.body.password}, function(err, doc){
+        mongoose.disconnect();
+        
+        if(err) return console.log(err);
+        
+        console.log("Сохранен объект user", doc);
+        response.redirect("signin");
     });
-
 };
 
 //POST Process
