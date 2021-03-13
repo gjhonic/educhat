@@ -2,7 +2,8 @@ const express = require("express");
 const expressHbs = require("express-handlebars");
 const hbs = require("hbs");
 const app = express();
-const session = require('express-session')
+const session = require('express-session');
+const mongoose = require('mongoose');
 
 //Routers
 //const userRouter = require("./routes/UserRouter.js");
@@ -28,18 +29,33 @@ app.use(
       secret: 'you secret key',
       saveUninitialized: true,
     })
-  )
+)
 
 //Routes
 app.use("/", homeRouter);
- 
 
+//404
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")
 });
 
-
 //Start Server
-app.listen(port, host, function () {
-    console.log(`Server listens http://${host}:${port}`)
-})
+async function start() {
+    try {
+      await mongoose.connect(
+        'mongodb://localhost:27017/educhat',
+        {
+          useNewUrlParser: true,
+          useFindAndModify: false
+        }
+      )
+      app.listen(port, host, function () {
+        console.log(`Server listens http://${host}:${port}`);
+    })
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  
+start();
+

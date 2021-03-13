@@ -1,8 +1,4 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const MongoClient = require("mongodb").MongoClient;
-const dburl = "mongodb://localhost:27017/educhat";
-const mongoClient = new MongoClient(dburl, { useUnifiedTopology: true });
+const User = require("../models/userScheme");
 
 //Actions
 
@@ -52,64 +48,50 @@ exports.signupProcess = function (request, response) {
         return response.send("Пароли не совпадают");
     }
 
-    mongoose.connect(dburl, { useUnifiedTopology: true, useNewUrlParser: true });
-
-    //Модель пользователя
-    const userScheme = new Schema({
-        name: {
-            type: String,
-            required: true,
-            minlength:2,
-            maxlength:20
-        },
-        surname: {
-            type: String,
-            required: true,
-            minlength:2,
-            maxlength:30
-        },
-        gender: {
-            type: String,
-            required: true,
-            enum: ['male', 'female'],
-        },
-        username: {
-            type: String,
-            required: true,
-            minlength:5,
-            maxlength:30
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-    });
-    
-    const User = mongoose.model("user", userScheme);
-    User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: request.body.password}, function(err, doc){
-        mongoose.disconnect();
-        
+    isExitUsername = null;
+    User.findOne({username: request.body.username}, function(err, doc){
         if(err) return console.log(err);
-        
-        console.log("Сохранен объект user", doc);
-        response.redirect("signin");
+        isExitUsername = doc;
     });
+    //console.log(isExitUsername);
+    if(isExitUsername!=null){
+        console.log(isExitUsername);
+        console.log("Такой пользователь есть");
+    }else{
+        console.log(isExitUsername);
+        console.log("Свободно");
+    }
+
+
+    // User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: request.body.password}, function(err, doc){
+    //     if(err) return console.log(err);
+        
+    //     console.log("Сохранен объект user", doc);
+    //     response.redirect("signin");
+    // });
+};
+
+//POST Process
+exports.help = async function (request, response) {
+    const Users = await User.find();
+    console.log(Users);
+    response.send(Users);
 };
 
 //POST Process
 exports.signinProcess = function (request, response) {
-    mongoClient.connect(function(err, client){
+    // mongoClient.connect(function(err, client){
           
-        const db = client.db("test");
-        const collection = db.collection("users");
+    //     const db = client.db("test");
+    //     const collection = db.collection("users");
      
-        if(err) return console.log(err);
+    //     if(err) return console.log(err);
           
-        collection.find().toArray(function(err, results){
-            console.log(results);
-            client.close();
-        });
-    });
+    //     collection.find().toArray(function(err, results){
+    //         console.log(results);
+    //         client.close();
+    //     });
+    // });
 };
 
 
