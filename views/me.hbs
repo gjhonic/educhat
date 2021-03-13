@@ -1,7 +1,5 @@
 <h2> Добро пожаловать {{ user.surname }} {{ user.name }} </h2>
 
-{{ Allusers }}
-
 {{#each Allusers}}
-  {{>Alluser Alluser=.}}
+  <li>{{this}}</li>
 {{/each}}

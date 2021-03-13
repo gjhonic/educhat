@@ -4,44 +4,74 @@ const bcrypt = require('bcrypt');
 
 //Main Pages
 exports.index = function (request, response) {
+    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+
     response.render("index.hbs", {
-        title: "Главная"
+        title: "Главная",
+        layout: set_layout,
+        flash:  {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        }
     });
 };
 
 //About Pages
 exports.about = function (request, response) {
+    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
     response.render("about.hbs", {
-        title: "О нас"
+        title: "О нас",
+        layout: set_layout,
+        flash:  {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        }
     });
 };
 
 //Signin Form Page
 exports.signin = function (request, response) {
+    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
     response.render("signin.hbs", {
-        title: "Вход"
+        title: "Вход",
+        layout: set_layout,
+        flash:  {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        }
     });
 };
 
 //Signip Form Page
 exports.signup = function (request, response) {
+    //response.send(request.flash('message'));
+
+    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
     response.render("signup.hbs", {
-        title: "Регистрация"
+        title: "Регистрация",
+        layout: set_layout,
+        flash:  {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        }
     });
 };
 
 //Signip Form Page
 exports.signout = function (request, response) {
-    request.session.userId = null;
+    request.session.userId = undefined;
     response.redirect('/')
 };
 
 //My Profile Page
 exports.profile = function (request, response) {
+
     User.findOne({_id: request.session.userId}, function(err, doc){
         if(err) return console.log(err);
         if(doc === null){
-            response.send('Нет доступа');
+            request.flash('flash_message', 'Пройдите аутентификацию');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signin");
         }else{
             User.find({}, function(err_find, results){
                 //return response.send(results);
@@ -51,7 +81,12 @@ exports.profile = function (request, response) {
                     user: {
                         name: doc.name,
                         surname: doc.surname
-                    }
+                    },
+                    flash:  {
+                        message: request.flash('flash_message'),
+                        status: request.flash('flash_status')
+                    },
+                    layout: 'app'
                 });
                 
             }); 
@@ -65,16 +100,16 @@ exports.signupProcess = function (request, response) {
     
     //Проверка что поля не пустые
     if(!validate_isempty(request)){
-        //request.session.flash = ["warning", "Заполните все поля!"];
-        //request.session.flash_note = "Заполните все поля!";
-        //response.redirect("signup");
-        return response.send("Поля не заполнены!");
+        request.flash('flash_message', 'Заполните все поля');
+        request.flash('flash_status', 'warning');
+        return response.redirect("/signup");
     }
     
     //Проверка на совпадение паролей
     if(request.body.password != request.body.confirmpassword){
-        //response.redirect("signup");
-        return response.send("Пароли не совпадают");
+        request.flash('flash_message', 'Пароли не совпадают');
+        request.flash('flash_status', 'warning');
+        return response.redirect("/signup");
     }
 
     User.findOne({username: request.body.username}, function(err, doc){
@@ -86,12 +121,16 @@ exports.signupProcess = function (request, response) {
 
             User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: hashpassword}, function(err, doc){
                 if(err) return response.send(err);
-                
-                response.send("Сохранен объект user: "+doc);
+                request.session.userId = doc._id;
+                request.flash('flash_message', 'Добро пожаловать в личный кабинет');
+                request.flash('flash_status', 'success');
+                return response.redirect('/me');
             });
         }
         else{
-            response.send('Логин занят');
+            request.flash('flash_message', 'Пользователь с таким логином существует!');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signup");
         }
     }); 
 };
@@ -103,16 +142,21 @@ exports.signinProcess = function (request, response) {
         if(err) return console.log(err);
 
         if(doc === null){
-            return response.send("Не верный логин или пароль 1");
+            request.flash('flash_message', 'Не верный логин пароль');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signin");
         }else{
             bcrypt.compare(request.body.password, doc.password, function(err, res) {
                 if (res) {
                     //Доступ есть!
                     request.session.userId = doc._id
-                    response.redirect('/me')
+                    request.flash('flash_message', 'Добро пожаловать в личный кабинет');
+                    request.flash('flash_status', 'success');;
+                    return response.redirect('/me')
                 }else {
-                    //Пароли не совпадают
-                    return response.send("Не верный логин или пароль 2");
+                    request.flash('flash_message', 'Не верный логин пароль');
+                    request.flash('flash_status', 'warning');
+                    return response.redirect("/signin");
                }
             });
         }

@@ -1,16 +1,5 @@
 <h2>{{ title }}</h2>
 
-{{#if flash}}
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    {{ flash.note}}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-{{/if}}
-
-
-
 <form method="POST" action="#">
   <div class="form-group">
     <label for="exampleInputUsername">Username</label>

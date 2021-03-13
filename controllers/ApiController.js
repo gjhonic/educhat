@@ -9,7 +9,7 @@ exports.getUsers = function (request, response) {
         if(doc == ''){
             response.send("Нет пользователей");
         }else{
-            response.send(doc);000
+            response.send(doc);
         }
         
     });

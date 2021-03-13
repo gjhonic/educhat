@@ -2,8 +2,10 @@ const express = require("express");
 const expressHbs = require("express-handlebars");
 const hbs = require("hbs");
 const app = express();
+const flash = require('connect-flash')
 const session = require('express-session');
 const mongoose = require('mongoose');
+
 
 //Routers
 const apiRouter = require("./routes/ApiRouter.js");
@@ -29,7 +31,10 @@ app.use(
       secret: 'you secret key',
       saveUninitialized: true,
     })
-)
+);
+app.use(flash());
+
+
 
 //Routes
 app.use("/api", apiRouter);
