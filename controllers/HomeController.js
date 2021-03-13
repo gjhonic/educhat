@@ -82,7 +82,7 @@ exports.profile = function (request, response) {
                         name: doc.name,
                         surname: doc.surname
                     },
-                    flash:  {
+                    flash: {
                         message: request.flash('flash_message'),
                         status: request.flash('flash_status')
                     },
