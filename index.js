@@ -6,7 +6,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 
 //Routers
-//const userRouter = require("./routes/UserRouter.js");
+const apiRouter = require("./routes/ApiRouter.js");
 const homeRouter = require("./routes/HomeRouter.js");
  
 
@@ -32,6 +32,7 @@ app.use(
 )
 
 //Routes
+app.use("/api", apiRouter);
 app.use("/", homeRouter);
 
 //404
