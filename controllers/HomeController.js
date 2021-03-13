@@ -1,5 +1,5 @@
 const User = require("../models/userScheme");
-
+const bcrypt = require('bcrypt');
 //Actions
 
 //Main Pages
@@ -25,10 +25,32 @@ exports.signin = function (request, response) {
 
 //Signip Form Page
 exports.signup = function (request, response) {
-
     response.render("signup.hbs", {
         title: "Регистрация"
     });
+};
+
+//Signip Form Page
+exports.signout = function (request, response) {
+    request.session.userId = null;
+    response.redirect('/')
+};
+
+//My Profile Page
+exports.profile = function (request, response) {
+    User.findOne({_id: request.session.userId}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc === null){
+            response.send('Нет доступа');
+        }else{
+            response.render("me.hbs", {
+                user: {
+                    name: doc.name,
+                    surname: doc.surname
+                }
+            });
+        }
+    }); 
 };
 
 //POST Process
@@ -48,50 +70,46 @@ exports.signupProcess = function (request, response) {
         return response.send("Пароли не совпадают");
     }
 
-    isExitUsername = null;
     User.findOne({username: request.body.username}, function(err, doc){
         if(err) return console.log(err);
-        isExitUsername = doc;
-    });
-    //console.log(isExitUsername);
-    if(isExitUsername!=null){
-        console.log(isExitUsername);
-        console.log("Такой пользователь есть");
-    }else{
-        console.log(isExitUsername);
-        console.log("Свободно");
-    }
+        if(doc === null){
 
+            let salt = bcrypt.genSaltSync(10);
+            let hashpassword = bcrypt.hashSync(request.body.password, salt)
 
-    // User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: request.body.password}, function(err, doc){
-    //     if(err) return console.log(err);
-        
-    //     console.log("Сохранен объект user", doc);
-    //     response.redirect("signin");
-    // });
+            User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: hashpassword}, function(err, doc){
+                if(err) return response.send(err);
+                
+                response.send("Сохранен объект user: "+doc);
+            });
+        }
+        else{
+            response.send('Логин занят');
+        }
+    }); 
 };
 
-//POST Process
-exports.help = async function (request, response) {
-    const Users = await User.find();
-    console.log(Users);
-    response.send(Users);
-};
 
 //POST Process
 exports.signinProcess = function (request, response) {
-    // mongoClient.connect(function(err, client){
-          
-    //     const db = client.db("test");
-    //     const collection = db.collection("users");
-     
-    //     if(err) return console.log(err);
-          
-    //     collection.find().toArray(function(err, results){
-    //         console.log(results);
-    //         client.close();
-    //     });
-    // });
+    User.findOne({username: request.body.username}, function(err, doc){
+        if(err) return console.log(err);
+
+        if(doc === null){
+            return response.send("Не верный логин или пароль 1");
+        }else{
+            bcrypt.compare(request.body.password, doc.password, function(err, res) {
+                if (res) {
+                    //Доступ есть!
+                    request.session.userId = doc._id
+                    response.redirect('/me')
+                }else {
+                    //Пароли не совпадают
+                    return response.send("Не верный логин или пароль 2");
+               }
+            });
+        }
+    });    
 };
 
 

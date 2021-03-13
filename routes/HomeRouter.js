@@ -13,8 +13,9 @@ homeRouter.get("/", homeController.index);
 homeRouter.get("/index", homeController.index);
 homeRouter.get("/signin", homeController.signin);
 homeRouter.get("/signup", homeController.signup);
+homeRouter.get("/signout", homeController.signout);
 
-homeRouter.get("/help", homeController.help);
+homeRouter.get("/me", homeController.profile);
 
 //POST
 homeRouter.post("/signin", urlencodedParser, homeController.signinProcess);

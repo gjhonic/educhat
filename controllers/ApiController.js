@@ -1,4 +1,5 @@
 const User = require("../models/userScheme");
+const bcrypt = require('bcrypt');
 
 //Actions
 //GET PROCESS
@@ -8,7 +9,7 @@ exports.getUsers = function (request, response) {
         if(doc == ''){
             response.send("Нет пользователей");
         }else{
-            response.send(doc);
+            response.send(doc);000
         }
         
     });
@@ -17,24 +18,21 @@ exports.getUsers = function (request, response) {
 //POST Process
 exports.addUser = function (request, response) {
 
-    // isExitUsername = null;
-    // User.findOne({username: request.body.username}, function(err, doc){
-    //     if(err) return console.log(err);
-    //     isExitUsername = doc;
-    // });
-    // //console.log(isExitUsername);
-    // if(isExitUsername!=null){
-    //     console.log(isExitUsername);
-    //     console.log("Такой пользователь есть");
-    // }else{
-    //     console.log(isExitUsername);
-    //     console.log("Свободно");
-    // }
+    User.findOne({username: request.body.username}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc === null){
 
+            let salt = bcrypt.genSaltSync(10);
+            let hashpassword = bcrypt.hashSync(request.body.password, salt)
 
-    // User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: request.body.password}, function(err, doc){
-    //     if(err) return console.log(err);
-        
-    //     response.send("Сохранен объект user: "+doc);
-    // });
+            User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: hashpassword}, function(err, doc){
+                if(err) return response.send(err);
+                
+                response.send("Сохранен объект user: "+doc);
+            });
+        }
+        else{
+            response.send('Логин занят');
+        }
+    });    
 };

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/gjhonic/educhat#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.1",
