@@ -43,12 +43,19 @@ exports.profile = function (request, response) {
         if(doc === null){
             response.send('Нет доступа');
         }else{
-            response.render("me.hbs", {
-                user: {
-                    name: doc.name,
-                    surname: doc.surname
-                }
-            });
+            User.find({}, function(err_find, results){
+                //return response.send(results);
+                if(err) return console.log(err);
+                response.render("me.hbs", {
+                    Allusers: results, 
+                    user: {
+                        name: doc.name,
+                        surname: doc.surname
+                    }
+                });
+                
+            }); 
+            
         }
     }); 
 };
