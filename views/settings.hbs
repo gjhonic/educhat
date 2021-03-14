@@ -1,0 +1,26 @@
+<h2>{{ title }}</h2>
+
+<form method="POST" action="#">
+
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="inputname">Name</label>
+        <input type="text" class="form-control" id="inputname" name="name" value="{{ user.name }}">
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="inputsurname">Surname</label>
+        <input type="text" class="form-control" id="inputsurname" name="surname" value="{{ user.surname }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="inputUsername">Username</label>
+    <input type="text" class="form-control" id="inputUsername" name="username" value="{{ user.username }}">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>

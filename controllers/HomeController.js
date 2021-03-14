@@ -16,19 +16,6 @@ exports.index = function (request, response) {
     });
 };
 
-//About Pages
-exports.about = function (request, response) {
-    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
-    response.render("about.hbs", {
-        title: "О нас",
-        layout: set_layout,
-        flash:  {
-            message: request.flash('flash_message'),
-            status: request.flash('flash_status')
-        }
-    });
-};
-
 //Signin Form Page
 exports.signin = function (request, response) {
     let set_layout = (request.session.userId !== undefined) ? "app" : "default";
@@ -61,6 +48,32 @@ exports.signup = function (request, response) {
 exports.signout = function (request, response) {
     request.session.userId = undefined;
     response.redirect('/')
+};
+
+//Settings Form Page
+exports.settings = function (request, response) {
+    User.findOne({_id: request.session.userId}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc === null){
+            request.flash('flash_message', 'Пройдите аутентификацию');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signin");
+        }else{
+            response.render("settings.hbs", {
+                user: {
+                    name: doc.name,
+                    surname: doc.surname,
+                    username: doc.username,
+                },
+                title: "Настройки",
+                flash: {
+                    message: request.flash('flash_message'),
+                    status: request.flash('flash_status')
+                },
+                layout: 'app'
+            });   
+        }
+    }); 
 };
 
 //My Profile Page
@@ -96,6 +109,7 @@ exports.profile = function (request, response) {
 };
 
 //POST Process
+//Метод создания пользователя
 exports.signupProcess = function (request, response) {
     
     //Проверка что поля не пустые
@@ -136,7 +150,7 @@ exports.signupProcess = function (request, response) {
 };
 
 
-//POST Process
+//Метод аутентификации
 exports.signinProcess = function (request, response) {
     User.findOne({username: request.body.username}, function(err, doc){
         if(err) return console.log(err);
@@ -161,6 +175,38 @@ exports.signinProcess = function (request, response) {
             });
         }
     });    
+};
+
+//Метод сохранения профиля
+exports.settingsProcess = function (request, response) {
+    //Проверка что поля не пустые
+    if(!validate_isempty(request)){
+        request.flash('flash_message', 'Заполните все поля');
+        request.flash('flash_status', 'warning');
+        return response.redirect("/settings");
+    }
+
+    User.findOne({username: request.body.username}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc === null){
+
+            let salt = bcrypt.genSaltSync(10);
+            let hashpassword = bcrypt.hashSync(request.body.password, salt)
+
+            User.create({name: request.body.name, surname: request.body.surname, gender: request.body.gender, username: request.body.username, password: hashpassword}, function(err, doc){
+                if(err) return response.send(err);
+                request.session.userId = doc._id;
+                request.flash('flash_message', 'Добро пожаловать в личный кабинет');
+                request.flash('flash_status', 'success');
+                return response.redirect('/me');
+            });
+        }
+        else{
+            request.flash('flash_message', 'Пользователь с таким логином существует!');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signup");
+        }
+    });   
 };
 
 

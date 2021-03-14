@@ -16,9 +16,11 @@ homeRouter.get("/signup", homeController.signup);
 homeRouter.get("/signout", homeController.signout);
 
 homeRouter.get("/me", homeController.profile);
+homeRouter.get("/settings", homeController.settings);
 
 //POST
 homeRouter.post("/signin", urlencodedParser, homeController.signinProcess);
 homeRouter.post("/signup", urlencodedParser, homeController.signupProcess);
+homeRouter.post("/settings", urlencodedParser, homeController.settingsProcess);
  
 module.exports = homeRouter;
