@@ -7,7 +7,7 @@ const schema = new Schema({
   },
   datetime: {
     type: String,
-    required: true,
+    required: false,
   },
   userTo: {
     type: String,

@@ -1,4 +1,5 @@
 const User = require("../models/userScheme");
+const Message = require("../models/messageScheme");
 const bcrypt = require('bcrypt');
 //Actions
 
@@ -21,6 +22,19 @@ exports.signin = function (request, response) {
     let set_layout = (request.session.userId !== undefined) ? "app" : "default";
     response.render("signin.hbs", {
         title: "Вход",
+        layout: set_layout,
+        flash:  {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        }
+    });
+};
+
+//Message Form Page
+exports.message = function (request, response) {
+    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+    response.render("message.hbs", {
+        title: "Chat",
         layout: set_layout,
         flash:  {
             message: request.flash('flash_message'),
@@ -207,6 +221,37 @@ exports.settingsProcess = function (request, response) {
             return response.redirect("/signup");
         }
     });   
+};
+
+//Message Process
+exports.messageProcess = function (request, response) {
+
+    User.findOne({_id: request.session.userId}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc === null){
+            request.flash('flash_message', 'Пройдите аутентификацию');
+            request.flash('flash_status', 'warning');
+            return response.redirect("/signin");
+        }else{
+            
+            //Проверка что поля не пустые
+            if(!validate_isempty(request)){
+                request.flash('flash_message', 'Заполните все поля');
+                request.flash('flash_status', 'warning');
+                return response.redirect("/settings");
+            }
+
+            User.findOne({username: "Ivan1"}, function(err, user_message_to){
+                //return response.send(request.body.send)
+                Message.create({message: request.body.message, userTo: user_message_to._id, userFrom: doc._id}, function(err, doc){
+                    if(err) return response.send(err);
+                    request.flash('flash_message', 'Сообщение успешно отправлено');
+                    request.flash('flash_status', 'success');
+                    return response.redirect('/me');
+                });
+            });     
+        }
+    }); 
 };
 
 

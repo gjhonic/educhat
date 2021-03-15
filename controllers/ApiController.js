@@ -1,4 +1,5 @@
 const User = require("../models/userScheme");
+const Message = require("../models/messageScheme");
 const bcrypt = require('bcrypt');
 
 //Actions
@@ -8,6 +9,19 @@ exports.getUsers = function (request, response) {
         if(err) return console.log(err);
         if(doc == ''){
             response.send("Нет пользователей");
+        }else{
+            response.send(doc);
+        }
+        
+    });
+};
+
+//GET PROCESS
+exports.getMessages = function (request, response) {
+    Message.find({}, function(err, doc){
+        if(err) return console.log(err);
+        if(doc == ''){
+            response.send("Нет сообщений");
         }else{
             response.send(doc);
         }

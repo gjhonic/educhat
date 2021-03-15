@@ -9,6 +9,7 @@ const urlencodedParser = bodyParser.urlencoded({extended: false});
 
 //GET
 apiRouter.get("/users", apiController.getUsers);
+apiRouter.get("/messages", apiController.getMessages);
 
 //POST
 apiRouter.post("/user", urlencodedParser, apiController.addUser);
