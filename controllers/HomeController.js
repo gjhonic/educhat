@@ -102,6 +102,15 @@ exports.profile = function (request, response) {
         }else{
             User.find({}, function(err_find, results){
                 //return response.send(results);
+                let messages_all;
+
+                Message.find({}, async function(err, doc){
+                    if(err) return console.log(err);
+                    return response.send(messages_all);
+                });
+
+                //return response.send(messages_all);
+
                 if(err) return console.log(err);
                 response.render("me.hbs", {
                     Allusers: results, 
