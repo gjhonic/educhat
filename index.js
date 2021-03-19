@@ -5,6 +5,7 @@ const app = express();
 const flash = require('connect-flash')
 const session = require('express-session');
 const mongoose = require('mongoose');
+let path = require("path");
 
 
 //Routers
@@ -23,9 +24,10 @@ app.engine("hbs", expressHbs(
         defaultLayout: "default",
         extname: "hbs"
     }
-))
+));
 app.set("view engine", "hbs");
 hbs.registerPartials(__dirname + "/views/partials");
+app.use(express.static(path.join(__dirname, 'src')));
 app.use(
     session({
       secret: 'you secret key',

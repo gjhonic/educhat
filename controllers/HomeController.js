@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 //Main Pages
 exports.index = function (request, response) {
-    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+    let set_layout = (request.session.userId !== undefined) ? "back" : "default";
 
     response.render("index.hbs", {
         title: "Главная",
@@ -19,7 +19,7 @@ exports.index = function (request, response) {
 
 //Signin Form Page
 exports.signin = function (request, response) {
-    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+    let set_layout = (request.session.userId !== undefined) ? "back" : "default";
     response.render("signin.hbs", {
         title: "Вход",
         layout: set_layout,
@@ -32,7 +32,7 @@ exports.signin = function (request, response) {
 
 //Message Form Page
 exports.message = function (request, response) {
-    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+    let set_layout = (request.session.userId !== undefined) ? "back" : "default";
     response.render("message.hbs", {
         title: "Chat",
         layout: set_layout,
@@ -47,7 +47,7 @@ exports.message = function (request, response) {
 exports.signup = function (request, response) {
     //response.send(request.flash('message'));
 
-    let set_layout = (request.session.userId !== undefined) ? "app" : "default";
+    let set_layout = (request.session.userId !== undefined) ? "back" : "default";
     response.render("signup.hbs", {
         title: "Регистрация",
         layout: set_layout,
@@ -84,7 +84,7 @@ exports.settings = function (request, response) {
                     message: request.flash('flash_message'),
                     status: request.flash('flash_status')
                 },
-                layout: 'app'
+                layout: 'back'
             });   
         }
     }); 
@@ -113,7 +113,7 @@ exports.profile = async function (request, response) {
             message: request.flash('flash_message'),
             status: request.flash('flash_status')
         },
-        layout: 'app'
+        layout: 'back'
     });
 };
 
