@@ -91,44 +91,30 @@ exports.settings = function (request, response) {
 };
 
 //My Profile Page
-exports.profile = function (request, response) {
+exports.profile = async function (request, response) {
 
-    User.findOne({_id: request.session.userId}, function(err, doc){
-        if(err) return console.log(err);
-        if(doc === null){
-            request.flash('flash_message', 'Пройдите аутентификацию');
-            request.flash('flash_status', 'warning');
-            return response.redirect("/signin");
-        }else{
-            User.find({}, function(err_find, results){
-                //return response.send(results);
-                let messages_all;
+    let user = await User.findOne({_id: request.session.userId});
+    
+    if(user == null){
+        request.flash('flash_message', 'Пройдите аутентификацию');
+        request.flash('flash_status', 'warning');
+        return response.redirect("/signin");
+    }
 
-                Message.find({}, async function(err, doc){
-                    if(err) return console.log(err);
-                    return response.send(messages_all);
-                });
+    let users = await User.find({});
 
-                //return response.send(messages_all);
-
-                if(err) return console.log(err);
-                response.render("me.hbs", {
-                    Allusers: results, 
-                    user: {
-                        name: doc.name,
-                        surname: doc.surname
-                    },
-                    flash: {
-                        message: request.flash('flash_message'),
-                        status: request.flash('flash_status')
-                    },
-                    layout: 'app'
-                });
-                
-            }); 
-            
-        }
-    }); 
+    response.render("me.hbs", {
+        Allusers: users, 
+        user: {
+            name: user.name,
+            surname: user.surname
+        },
+        flash: {
+            message: request.flash('flash_message'),
+            status: request.flash('flash_status')
+        },
+        layout: 'app'
+    });
 };
 
 //POST Process
@@ -250,7 +236,7 @@ exports.messageProcess = function (request, response) {
                 return response.redirect("/settings");
             }
 
-            User.findOne({username: "Ivan1"}, function(err, user_message_to){
+            User.findOne({username: "feofan"}, function(err, user_message_to){
                 //return response.send(request.body.send)
                 Message.create({message: request.body.message, userTo: user_message_to._id, userFrom: doc._id}, function(err, doc){
                     if(err) return response.send(err);
